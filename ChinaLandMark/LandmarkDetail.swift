@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct LandmarkDetail: View {
+    let landmark: Landmark
+    @EnvironmentObject var userData: UserData
+    var landmarkIndex : Int {
+        userData.userLandmarks.firstIndex(where: {$0.id == landmark.id})!
+    }
+    
     var body: some View {
         VStack {
-            MapView()
+            MapView(center: landmark.locationCoordinate)
                 .edgesIgnoringSafeArea(.top)
                 .frame( height: 350)
-            Image("tiananmen")
+            Image(landmark.imageName)
                 .resizable()
                 .frame(width: 250, height: 250, alignment: .center)
                 .clipShape(Circle())
@@ -22,25 +28,39 @@ struct LandmarkDetail: View {
                 .offset(x: 0, y: -130)
                 .padding(.bottom, -130)
             VStack(alignment: .leading, spacing: 8) {
-                Text("天安门")
-                    .font(.title)
+                HStack {
+                    Text(landmark.name)
+                        .font(.title)
+                    Button(action: {
+                        self.userData.userLandmarks[landmarkIndex].isFavorite.toggle()
+                    }){
+                        if userData.userLandmarks[landmarkIndex].isFavorite {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                        }else{
+                            Image(systemName: "star")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
                 HStack{
-                    Text("北京").font(.subheadline)
+                    Text(landmark.city).font(.subheadline)
                     Spacer()
-                    Text("北京市").font(.subheadline)
+                    Text(landmark.province).font(.subheadline)
                 }
             }
             .padding()
             Spacer()
         }
-        .navigationBarTitle(Text("天安门"), displayMode: .inline)
+        .navigationBarTitle(Text(landmark.name), displayMode: .inline)
     }
 }
 
 struct LandmarkDetail_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
-            LandmarkDetail()
+            LandmarkDetail(landmark: landmarks[6])
+                .environmentObject(UserData())
         }
     }
 }

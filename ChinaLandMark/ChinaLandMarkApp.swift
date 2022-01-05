@@ -21,7 +21,7 @@ struct ChinaLandMarkApp: App {
     @Environment(\.scenePhase) var scenePhase
     var body: some Scene {
         WindowGroup {
-            LandmarkDetail()
+            LandmarkList().environmentObject(UserData())
         }.onChange(of: scenePhase) { newValue in
             switch newValue {
             case .active:
